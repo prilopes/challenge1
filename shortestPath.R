@@ -20,27 +20,41 @@ areValidVertices <- function(g, v1, v2){
 
 getShortestPath <- function(g, v1, v2){
   
-  toVisit <- data.frame(V = v1, G = 0)
-  passed <- data.frame()
+  open <- data.frame(V = v1, G = 0)
+  closed <- data.frame()
   
-  while(nrow(toVisit) > 0){
-    current <- toVisit[1,]
-    toVisit <- toVist[-1,]
+  while(nrow(open) > 0){
+    current <- open[1,]
+    open <- open[-1,]
     
     if(current$V == v2){
       return(current$G)
     }
     else {
       adjVertices <- getAdjacents(g, current$V)
-      newVisit <- data.frame(V = adjVertices, G = rep((current$G + 1), times = length(adjVertices)))
+      newVertices <- setdiff(adjVertices, c(toVist$V, closed$V)) ## never b4 seen
+      adjInOpen <- setdiff(adjVertices, toVist$V) ## seen but not visited
+      adjInClosed <- setdiff(adjVertices, closed$V) ## seen, visited, but maybe this is a shorter path?
       
+      open <- update(open, adjInOpen)
+      updatedPassed <- 
       
+      newV <- c(open$V, newVertices)
+      newG <- c(open$G, rep(current$G + 1, times = length(newVertices)))
       
-      toVisit <- data.frame(V = c(toVisit$V, newVisit$V), G = c(toVisit$G, newVisit$G))
+      open <- data.frame(V = newV, G = newG)
+      
     }
   }
 }
 
 getAdjacents <- function(g, v){
   return(g[g$V1 == v, 'V2'])
+}
+
+getNewVertices <- function(adj, created){
+  
+  areNew <- sapply(adj, function(x) !is.element(x, created))
+  
+  return(adj[areNew])
 }
