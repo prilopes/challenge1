@@ -18,7 +18,7 @@ areValidVertices <- function(g, v1, v2){
   return(v1IsValid && v2IsValid)
 }
 
-getShortestPath <- function(g, v1, v2){
+getShortestPath <- function(gr, v1, v2){
   
   open <- data.frame(V = v1, G = 0)
   closed <- data.frame()
@@ -31,30 +31,47 @@ getShortestPath <- function(g, v1, v2){
       return(current$G)
     }
     else {
-      adjVertices <- getAdjacents(g, current$V)
-      newVertices <- setdiff(adjVertices, c(toVist$V, closed$V)) ## never b4 seen
-      adjInOpen <- setdiff(adjVertices, toVist$V) ## seen but not visited
+      adjVertices <- getAdjacents(gr, current$V)
+      
+      if(length(adjVertices) == 0)
+        return(-1)
+      
+      newVertices <- setdiff(adjVertices, c(open$V, closed$V)) ## never b4 seen
+      adjInOpen <- setdiff(adjVertices, open$V) ## seen but not visited
       adjInClosed <- setdiff(adjVertices, closed$V) ## seen, visited, but maybe this is a shorter path?
       
-      open <- update(open, adjInOpen)
-      updatedPassed <- 
+      g <- current$G + 1
       
-      newV <- c(open$V, newVertices)
-      newG <- c(open$G, rep(current$G + 1, times = length(newVertices)))
+      opened <- subAdjacent(open, adjInOpen, g)
+      open <- open[!(open$V %in% opened),]
       
-      open <- data.frame(V = newV, G = newG)
+      reopened <- subAdjacent(closed, adjInClosed, g)
+      closed <- closed[!(closed$V %in% reopened),]
       
+      newV <- c(newVertices, opened, reopened)
+      newG <- rep(g, times = length(newV))
+      
+      open <- data.frame(V = c(open$V, newV), G = c(open$G, newG))
+      open <- open[order(open$G),]
+      
+      closed <- data.frame(V = c(closed$V, current$V), G = c(closed$G, current$G))
     }
   }
 }
 
-getAdjacents <- function(g, v){
-  return(g[g$V1 == v, 'V2'])
+getAdjacents <- function(gr, v){
+ 
+  return(gr[gr$V1 == v, 'V2'])
 }
 
-getNewVertices <- function(adj, created){
+subAdjacent <- function(generated, adjacents, g){
   
-  areNew <- sapply(adj, function(x) !is.element(x, created))
+  if(length(adjacents) == 0)
+    v <- numeric(0)
+  else{
+    generated <- generated[generated$V %in% adjacents,]
+    v <- generated[generated$G > g,'V']
+  }
   
-  return(adj[areNew])
+  return(v)
 }
