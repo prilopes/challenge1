@@ -33,9 +33,6 @@ getShortestPath <- function(gr, v1, v2){
     else {
       adjVertices <- getAdjacents(gr, current$V)
       
-      if(length(adjVertices) == 0)
-        return(-1)
-      
       newVertices <- setdiff(adjVertices, c(open$V, closed$V)) ## never b4 seen
       adjInOpen <- setdiff(adjVertices, open$V) ## seen but not visited
       adjInClosed <- setdiff(adjVertices, closed$V) ## seen, visited, but maybe this is a shorter path?
@@ -57,6 +54,8 @@ getShortestPath <- function(gr, v1, v2){
       closed <- data.frame(V = c(closed$V, current$V), G = c(closed$G, current$G))
     }
   }
+  
+  return(-1)
 }
 
 getAdjacents <- function(gr, v){

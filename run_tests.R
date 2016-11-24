@@ -1,5 +1,5 @@
 library(testthat)
 
-debugSource('shortestPath.R')
+source('shortestPath.R')
 
 test_dir(paste(getwd(),'tests', sep = "/"), reporter = 'Summary')
