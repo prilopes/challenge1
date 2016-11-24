@@ -1,21 +1,20 @@
-## finds shortest path between 2 vertices in graph g
-shortestPath <- function(g, v1, v2){
+## finds shortest path between 2 vertices in graph gr
+shortestPath <- function(gr, v1, v2){
   
-  ## Are v1 and v2 in g?
-  if(areValidVertices(g,v1,v2)){
-    return(getShortestPath(g, v1, v2))
+  ## Are v1 and v2 in gr?
+  if(areValidVertices(gr,v1,v2)){
+    return(getShortestPath(gr, v1, v2))
   }
   else {
     return(-1)
   }
 }
 
-areValidVertices <- function(g, v1, v2){
+areValidVertices <- function(gr, v1, v2){
   
-  v1IsValid <- (nrow(g[g$V1 == v1,]) > 0)
-  v2IsValid <- (nrow(g[g$V2 == v2,]) > 0)
+  allVertices <- unique(c(gr$V1, gr$V2))
     
-  return(v1IsValid && v2IsValid)
+  return(all(c(v1,v2) %in% allVertices))
 }
 
 getShortestPath <- function(gr, v1, v2){
