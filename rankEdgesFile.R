@@ -1,5 +1,7 @@
 source("rankCloseness.R")
 
-edges <- read.table("testEdges.dat")
+edges <- read.table("edges.dat")
 
-write.table(rankCloseness(edges),"rankedEdges.dat")
+ranking <- rankCloseness(edges)
+
+write.table(ranking,"rankedEdges.dat")
